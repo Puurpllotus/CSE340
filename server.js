@@ -14,6 +14,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Static middleware to serve the public folder
+app.use(express.static('public'));
+
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
 
