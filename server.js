@@ -57,8 +57,9 @@ app.get('/categories', async (req, res) => {
         const categories = await getAllCategories();
         res.render('categories', { title, categories });
     } catch (error) {
-        console.error("Failed to render categories page:", error);
-        res.status(500).send("Internal Server Error");
+        // This line will print the exact database issue to your VS Code terminal
+        console.error("--- DATABASE CRASH LOG ---", error); 
+        res.status(500).send(`Internal Server Error: ${error.message}`);
     }
 });
 
