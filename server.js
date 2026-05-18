@@ -1,6 +1,9 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+// Import data manager modules
+import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -22,6 +25,7 @@ app.set('view engine', 'ejs');
 
 // Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
+
 /**
  * Routes
  */
@@ -37,13 +41,27 @@ app.get('/organizations', async (req, res) => {
 
 app.get('/projects', async (req, res) => {
     const title = 'Service Projects';
-    res.render('projects', { title });
+    try {
+        const projects = await getAllProjects();
+        res.render('projects', { title, projects });
+    } catch (error) {
+        console.error("Failed to render projects page:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
+// Dynamic database integration for service categories
 app.get('/categories', async (req, res) => {
     const title = 'Categories';
-    res.render('categories', { title });
+    try {
+        const categories = await getAllCategories();
+        res.render('categories', { title, categories });
+    } catch (error) {
+        console.error("Failed to render categories page:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
+
 app.listen(PORT, () => {
     console.log(`Server is running at http://127.0.0.1:${PORT}`);
     console.log(`Environment: ${NODE_ENV}`);

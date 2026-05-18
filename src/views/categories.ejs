@@ -1,18 +1,22 @@
 <%- include('partials/header') %>
-
     <main>
-        <h1>
-            <%= title %>
-        </h1>
-
-        <h2>Categories</h2>
-        <p>Environmental
-            Educational
-            Community Service
-            Health and Wellness.</p>
-
-        <img class="main-logo" src="images/cse340-service-network.png" alt="CSE 340 Service Network Logo">
-
+        <h1><%= title %></h1>
+        <p>Browse through our active service sectors:</p>
+        
+        <div class="categories-container">
+            <% if (categories && categories.length > 0) { %>
+                <ul class="categories-list">
+                    <% categories.forEach(category => { %>
+                        <li>
+                            <strong class="category-name"><%= category.name %></strong>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No project categories have been configured yet.</p>
+            <% } %>
+        </div>
     </main>
-
-    <%- include('partials/footer') %>
+</body>
+</html>
+<%- include('partials/footer') %>

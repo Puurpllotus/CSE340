@@ -1,0 +1,98 @@
+COACHING SESSION TRANSCRIPT
+Student: Tamunobarabinye Longjohn
+Role: Learning Coach and Software Mentor
+Date: 2026-05-10
+
+[Coach]: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say 'I don't know' or 'I made a mistake.' That's the fastest way we'll learn today. I'm your supportive Learning Coach and Software Mentor. Before we dive into the cool stuff you've been building, could you confirm your name for me?
+
+[Student]: Tamunobarabinye Longjohn
+
+[Coach]: It is great to meet you, Tamunobarabinye! I'm excited to walk through your project with you. To get us started on our first topic, Express Routing, could you paste the snippet from your server.js file where you define your routes?
+
+[Student]: 
+app.get('/', async (req, res) => {
+    const title = 'Home';
+    res.render('home', { title });
+});
+
+app.get('/organizations', async (req, res) => {
+    const title = 'Our Partner Organizations';
+    res.render('organizations', { title });
+});
+
+app.get('/projects', async (req, res) => {
+    const title = 'Service Projects';
+    res.render('projects', { title });
+});
+
+app.get('/categories', async (req, res) => {
+    const title = 'Categories';
+    res.render('categories', { title });
+});
+
+[Coach]: Nice work on these routes! I see you've used async for each of them and are passing the title variable directly into the res.render() function. Looking at that first route for the home page, can you explain in your own words what the req and res objects represent in that function?
+
+[Student]: req and res mean Request and Respond respectively. They are objects that have been provided by Express.js for whenever a user visits a route. The req object contains information on incoming requests from a user or a browser. The res object is used to send things back to the user.
+
+[Coach]: Spot on! That is a perfect explanation of how they function as the "bridge" between the user and your server. Moving on to Topic 2: JavaScript Language Principles, your assignment requirements mentioned using arrow notation and const wherever possible. Could you share a snippet of JavaScript from your project—perhaps a function or some logic you wrote—that demonstrates these principles?
+
+[Student]: 
+// Define the application environment
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
+
+// Define the port number the server will listen on
+const PORT = process.env.PORT || 3000;
+
+// Setup __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+
+[Coach]: That is a great example of using const for variables that aren't intended to be reassigned. You've also included some clever logic there, specifically with the process.env.NODE_ENV?.toLowerCase() || 'production' line. Could you tell me why you chose to use the || 'production' (the logical OR operator) at the end of that statement?
+
+[Student]: The || 'production' part is used to provide a default value in case process.env.NODE_ENV does not exist or is empty. I used it so the application always has a safe fallback environment instead of crashing or working with an undefined value.
+
+[Coach]: Exactly right—that "short-circuit" logic keeps your app stable by ensuring you always have a valid string to work with. Now, let's move to Topic 3: EJS Partials and Pages. Could you share a snippet of code from one of your EJS files (like your header or home page) that shows how you are bringing in those partials or using your variables?
+
+[Student]: 
+<%- include('partials/header') %>
+<main>
+    <h1><%= title %></h1>
+    <h2>Welcome to the CSE 340 Service Network!</h2>
+    <p>Our mission is to promote service across the world by connecting volunteers with service opportunities in their community.</p>
+    <img class="main-logo" src="images/cse340-service-network.png" alt="CSE 340 Service Network Logo">
+</main>
+<%- include('partials/footer') %>
+
+[Coach]: That looks like a solid, clean EJS structure! You’ve followed the requirements perfectly by using the different tags for different purposes. In your code, I see you used <%- include(...) %> for the partials at the top and bottom, but <%= title %> for the heading in the middle. Why do we use the dash <%- for the includes instead of the equals sign <%=?
+
+[Student]: The difference is in how EJS handles the output. <%= %> is for Escaped Output, so it prints content while escaping HTML characters for safety. <%- %> is for Unescaped Output, the include() function returns actual HTML content from another EJS file. If I used <%= %> instead, the HTML tags from the partial would be escaped and shown as plain text on the webpage instead of being rendered.
+
+[Coach]: Exactly! If you escaped the partial, you'd see literal <html> and <nav> tags printed as text on your screen, which would definitely break the layout. Using the unescaped tag is what allows EJS to "inject" the actual structural HTML into the page. We are on the home stretch! Topic 4 is Frontend CSS. Could you paste a snippet of the CSS you used to style your site? I'm specifically interested in how you made the layout professional or responsive.
+
+[Student]: 
+:root {
+  --primary-color: #a62abe;
+  --secondary-color: #159895;
+  --accent-color: #57c5b6;
+  --bg-color: #f8fafc;
+  --text-color: #1e293b;
+  --light-text: #ffffff;
+  --nav-bg: #002b5b;
+  --footer-bg: #092635;
+  --max-width: 1100px;
+}
+/* ... [rest of the CSS] ... */
+@media (max-width: 600px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+[Coach]: That is a very clean and organized stylesheet! I love how you used CSS variables in the :root selector—it makes it so much easier to change the color scheme later if you need to. In your nav ul and body rules, you used display: flex;. Can you describe what the flex-wrap: wrap; property inside your nav ul is doing for the layout when the screen gets smaller?
+
+[Student]: The flex-wrap: wrap; property tells the flex container that its items are allowed to move onto a new line if there is not enough horizontal space. Without it, all navigation items would try to stay on a single row. This helps make the navigation more responsive and keeps the layout clean and readable on tablets and mobile devices.
+
+[Coach]: Spot on! You’ve got a great handle on how Flexbox manages space to prevent layout breaking. That wraps up all four of our mandatory topics: Express Routing, JavaScript Principles, EJS, and CSS. You've clearly put a lot of thought into both the functionality and the organization of your code.
