@@ -1,12 +1,13 @@
 import pg from 'pg';
 const { Pool } = pg;
 
-// Connection initialization points directly to your environment string
+// If process.env.DATABASE_URL exists (like it does on Render), use it.
+// Otherwise, we explicitly fall back to a local string for your local machine.
+const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/your_local_db';
+
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    connectionString: connectionString,
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
 /**
