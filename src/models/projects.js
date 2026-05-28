@@ -1,14 +1,16 @@
 import pg from 'pg';
 const { Pool } = pg;
 
-// If process.env.DATABASE_URL exists (like it does on Render), use it.
-// Otherwise, we explicitly fall back to a local string for your local machine.
-const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/your_local_db';
-
-const pool = new Pool({
-    connectionString: connectionString,
-    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
-});
+let pool;
+function getPool() {
+    if (!pool) {
+        pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+        });
+    }
+    return pool;
+}
 
 /**
  * Fetches all service projects joined with their parent organization names
@@ -27,9 +29,10 @@ export const getAllProjects = async () => {
         INNER JOIN organization o ON p.organization_id = o.organization_id
         ORDER BY p.project_date ASC;
     `;
-    
+
     try {
-        const result = await pool.query(query);
+        const db = getPool();
+        const result = await db.query(query);
         return result.rows;
     } catch (error) {
         console.error("Error in getAllProjects model:", error);
