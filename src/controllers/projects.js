@@ -11,3 +11,4 @@ const showProjectsPage = async (req, res) => {
 
 // Export any controller functions
 export { showProjectsPage };
+

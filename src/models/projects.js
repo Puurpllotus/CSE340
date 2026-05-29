@@ -1,7 +1,6 @@
 import pg from 'pg';
 const { Pool } = pg;
 
-// If process.env.DATABASE_URL exists (like it does on Render), use it.
 const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/your_local_db';
 
 const pool = new Pool({
@@ -11,7 +10,6 @@ const pool = new Pool({
 
 /**
  * Fetches all service projects joined with their parent organization names
- * @returns {Promise<Array>} Array of project objects
  */
 export const getAllProjects = async () => {
     const query = `
@@ -32,6 +30,32 @@ export const getAllProjects = async () => {
         return result.rows;
     } catch (error) {
         console.error("Error in getAllProjects model:", error);
+        throw error;
+    }
+};
+
+/**
+ * Fetches service projects associated with a specific organization
+ */
+export const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT
+          project_id,
+          organization_id,
+          title,
+          description,
+          location,
+          project_date as date
+        FROM project
+        WHERE organization_id = $1
+        ORDER BY project_date;
+    `;
+    
+    try {
+        const result = await pool.query(query, [organizationId]);
+        return result.rows;
+    } catch (error) {
+        console.error("Error in getProjectsByOrganizationId model:", error);
         throw error;
     }
 };

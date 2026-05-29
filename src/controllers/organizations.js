@@ -1,15 +1,36 @@
-// Define any controller functions
-const showOrganizationsPage = async (req, res) => {
-    // Static fallback matching the organizations data structure required by the view
-    const organizations = [
-        { name: 'BrightFuture Builders', email: 'info@brightfuture.org', logo: '/images/brightfuture-logo.png' },
-        { name: 'GreenHarvest Growers', email: 'contact@greenharvest.org', logo: '/images/greenharvest-logo.png' },
-        { name: 'UnityServe Volunteers', email: 'hello@unityserve.org', logo: '/images/unityserve-logo.png' }
-    ];
-    const title = 'Our Partner Organizations';
+import { getAllOrganizations, getOrganizationDetails } from '../models/organizations.js';
+import { getProjectsByOrganizationId } from '../models/projects.js';
 
-    res.render('organizations', { title, organizations });
+// Renders list of all organizations
+const showOrganizationsPage = async (req, res, next) => {
+    try {
+        const organizations = await getAllOrganizations();
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title, organizations });
+    } catch (error) {
+        next(error);
+    }
 };
 
-// Export any controller functions
-export { showOrganizationsPage };
+// Renders single organization profile view details and its respective projects
+const showOrganizationDetailsPage = async (req, res, next) => {
+    try {
+        const organizationId = req.params.id;
+        const organizationDetails = await getOrganizationDetails(organizationId);
+        
+        if (!organizationDetails) {
+            const err = new Error('Organization Not Found');
+            err.status = 404;
+            return next(err);
+        }
+
+        const projects = await getProjectsByOrganizationId(organizationId);
+        const title = 'Organization Details';
+
+        res.render('organization', { title, organizationDetails, projects });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { showOrganizationsPage, showOrganizationDetailsPage };
