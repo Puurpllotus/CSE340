@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= categoryDetails.name %></h1>
+    <p>Service initiatives sorted under this classification:</p>
+
+    <div class="projects-container">
+        <% if (projects && projects.length > 0) { %>
+            <ul class="projects-list">
+                <% projects.forEach(project => { %>
+                    <li>
+                        <a href="/project/<%= project.project_id %>">
+                            <strong><%= project.title %></strong>
+                        </a>
+                        <p class="project-desc"><%= project.description %></p>
+                        <small class="project-loc">📍 Location: <%= project.location %></small>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>No projects are currently assigned to this category.</p>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

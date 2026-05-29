@@ -1,22 +1,24 @@
 <%- include('partials/header') %>
-    <main>
-        <h1><%= title %></h1>
-        <p>Browse through our active service sectors:</p>
-        
-        <div class="categories-container">
-            <% if (categories && categories.length > 0) { %>
-                <ul class="categories-list">
-                    <% categories.forEach(category => { %>
-                        <li>
-                            <strong class="category-name"><%= category.name %></strong>
-                        </li>
-                    <% }); %>
-                </ul>
-            <% } else { %>
-                <p>No project categories have been configured yet.</p>
-            <% } %>
-        </div>
-    </main>
-</body>
-</html>
+
+<main>
+    <h1><%= title %></h1>
+    <p>Browse through our active service sectors:</p>
+    
+    <div class=\"categories-container\">
+        <% if (categories && categories.length > 0) { %>
+            <ul class=\"categories-list\">
+                <% categories.forEach(category => { %>
+                    <li>
+                        <a href="/category/<%= category.category_id %>" class="category-link">
+                            <strong class=\"category-name\"><%= category.name %></strong>
+                        </a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No project categories have been configured yet.</p>
+        <% } %>
+    </div>
+</main>
+
 <%- include('partials/footer') %>
