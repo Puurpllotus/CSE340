@@ -55,3 +55,31 @@ export const getCategoriesByProjectId = async (projectId) => {
         throw error;
     }
 };
+
+/**
+ * Insert a new category into the database
+ */
+export const insertCategory = async (categoryName) => {
+    const query = 'INSERT INTO category (name) VALUES ($1) RETURNING *;';
+    try {
+        const result = await pool.query(query, [categoryName]);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+        console.error("Error in insertCategory model:", error);
+        throw error;
+    }
+};
+
+/**
+ * Update an existing category name
+ */
+export const updateCategory = async (categoryId, categoryName) => {
+    const query = 'UPDATE category SET name = $1 WHERE category_id = $2 RETURNING *;';
+    try {
+        const result = await pool.query(query, [categoryName, categoryId]);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+        console.error("Error in updateCategory model:", error);
+        throw error;
+    }
+};
