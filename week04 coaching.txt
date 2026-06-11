@@ -1,0 +1,182 @@
+========================================================================
+WEEK 04 COACHING SESSION TRANSCRIPT - SAMPSON LONGJOHN
+========================================================================
+
+[Coach]: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say 'I don't know' or 'I made a mistake.' That's the fastest way we'll learn today. To get us started and set up our workspace, could you please confirm your name?
+
+[Sampson]: Sampson Longjohn
+
+[Coach]: Thanks, Sampson! Let's dive right in. To kick things off with our first topic, Handling Form Submissions, could you paste a non-trivial code snippet showing how you extract data from a request body and pass it along to your application's functions?
+
+[Sampson]: 
+const registerCategory = async (req, res, next) => {
+    // 1. Extract data safely from the incoming HTTP request body object
+    const { category_name } = req.body;
+    
+    // 2. Fetch the results of any validation middleware run prior to the controller
+    const errors = validationResult(req);
+
+    // 3. Conditional block checking if any field broke server rules
+    if (!errors.isEmpty()) {
+        return res.render('categories/add-category', {
+            title: 'Add New Category',
+            errors: errors.array(),
+            category_name // Sent back to sticky-populate the form view field
+        });
+    }
+
+    try {
+        // 4. Pass the extracted data down to the application's model level execution layer
+        const result = await insertCategory(category_name);
+        
+        if (result) {
+            req.flash('notice', `The ${category_name} category was successfully added.`);
+            res.redirect('/categories');
+        } else {
+            req.flash('notice', 'Sorry, adding the category failed.');
+            res.status(501).render('categories/add-category', {
+                title: 'Add New Category',
+                errors: null,
+                category_name
+            });
+        }
+    } catch (error) {
+        next(error); // Forwards database execution errors into the global centralized app error handler
+    }
+};
+
+[Coach]: This is a solid, clean implementation of a controller function, Sampson. Looking at your code, what is the specific reason or advantage of passing category_name back to the res.render call inside your validation error block (if (!errors.isEmpty()))?
+
+[Sampson]: When server-side validation fails, the application re-renders the registration page to show the error list. Without passing the variable back, the form input field clears completely, forcing the user to type the name all over again. By sending the data back, the EJS value attribute (value="<%= category_name %>") repopulates the input field with their exact text, preserving their input for a seamless user experience.
+
+[Coach]: Spot on, Sampson. That "sticky" form behavior saves users a lot of frustration. Let's move on to our second topic, Forms for Updates. Could you paste a non-trivial EJS snippet showing how you insert existing data into a form so a user can edit an entity?
+
+[Sampson]: 
+<main>
+    <h1><%= title %></h1>
+
+    <% if (errors) { %>
+        <ul class="notice">
+            <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+            <% }) %>
+        </ul>
+    <% } %>
+
+    <form action="/edit-category/<%= category_id %>" method="POST">
+        
+        <label for="category_name">Category Name</label>
+        <input 
+            type="text" 
+            name="category_name" 
+            id="category_name" 
+            required 
+            value="<%= category_name %>" 
+            maxlength="100"
+        >
+        
+        <input type="hidden" name="category_id" value="<%= category_id %>">
+        
+        <button type="submit">Update Category</button>
+    </form>
+</main>
+
+[Coach]: Great snippet, Sampson. It clearly sets up the data injection. In this update form, you're appending <%= category_id %> right into the form's action attribute, but you also included an <input type="hidden" name="category_id" value="<%= category_id %>"> inside the form. What went into your decision to include the ID in both places, and how does your backend use them differently?
+
+[Sampson]: Including the ID in both the URL path and the hidden form input serves two distinct purposes on the backend, separating route matching from data processing. Placing the ID in both locations keeps the route definition decoupled from the internal data structure. If we change your URL layout later to a clean static endpoint (e.g., /category/update), the controller logic processing the form data payload inside req.body will not break, because it does not depend on data extracted from the URL path.
+
+[Coach]: That makes total sense. Decoupling the routing parameters (req.params) from the request payload (req.body) gives your application great flexibility if the URL structure changes later. Let's move to our third topic, Sessions and Flash Messages. Could you provide a relevant code snippet showing how you configure or utilize sessions and flash messages in your application?
+
+[Sampson]: 
+// configuration inside your root server.js file
+import session from 'express-session';
+import flash from 'connect-flash';
+
+app.use(session({
+    secret: 'session_secret_key',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(flash());
+
+// Pass flash messages to all views via local variables middleware
+app.use((req, res, next) => {
+    res.locals.notice = req.flash('notice');
+    next();
+});
+
+// Utilization inside src/controllers/categories.js
+const registerCategory = async (req, res, next) => {
+    const { category_name } = req.body;
+    try {
+        const result = await insertCategory(category_name);
+        if (result) {
+            // Setting a flash message before redirecting
+            req.flash('notice', `The ${category_name} category was successfully added.`);
+            res.redirect('/categories');
+        } else {
+            req.flash('notice', 'Sorry, adding the category failed.');
+            res.status(501).render('categories/add-category', {
+                title: 'Add New Category',
+                errors: null,
+                category_name
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+[Coach]: Excellent configuration and setup, Sampson. Using custom middleware to automatically map req.flash('notice') to res.locals.notice is an elegant way to make flash messages universally accessible across your views. Based on how flash messages work under the hood, what would happen to that 'notice' message if you refreshed the /categories page immediately after the redirection completed, and why does that happen?
+
+[Sampson]: Under the hood, connect-flash stores data in a temporary array inside the session object (req.session.flash). When the application reads the flash message to display it (which happens automatically on the first page load via the middleware req.flash('notice')), the package immediately deletes that key from the session memory.
+
+[Coach]: Perfect explanation. The data is cleared instantly upon being read from the session. If you refresh the page, the message disappears entirely because it has already been consumed. Let's move to our fourth and final topic, Server-side Validation. Could you provide a relevant code snippet showing your approach to validating user input on the server side?
+
+[Sampson]: 
+// 1. Defined in src/utilities/category-validation.js
+import { body } from 'express-validator';
+
+export const categoryRules = () => {
+    return [
+        // Validates the 'category_name' input field from the form
+        body('category_name')
+            .trim()
+            .escape()
+            .notEmpty().withMessage('Please provide a category name.')
+            .isLength({ min: 3 }).withMessage('Category name must be at least 3 characters long.')
+            .isLength({ max: 100 }).withMessage('Category name cannot be longer than 100 characters.')
+    ];
+};
+
+// 2. Applied in src/routes.js
+router.post('/new-category', categoryRules(), registerCategory);
+
+// 3. Handled in src/controllers/categories.js
+import { validationResult } from 'express-validator';
+
+const registerCategory = async (req, res, next) => {
+    const { category_name } = req.body;
+    
+    // Extracts validation errors gathered by the middleware from the request object
+    const errors = validationResult(req);
+
+    // Evaluates if any validation rules were violated
+    if (!errors.isEmpty()) {
+        return res.render('categories/add-category', {
+            title: 'Add New Category',
+            errors: errors.array(), // Converts errors to an array to be looped over in EJS
+            category_name
+        });
+    }
+    
+    // Proceed to database insertion if validation passes...
+};
+
+[Coach]: This is an excellent implementation of express-validator across your layers, Sampson. In your rules, you chain .trim() and .escape() right before checking if the field is empty or matching its length. Why is it critical to sanitize the input with methods like .trim() and .escape() before running validations like .notEmpty() or checking the length, rather than doing it afterward?
+
+[Sampson]: It is critical to sanitize the input before running validations because sanitization directly alters the characters and length of the data being checked. Running these steps in the correct order prevents bypasses and ensures accuracy. If we validate first: The string "   " passes the .notEmpty() check because its length is 3. The application proceeds with invalid data. If we sanitize first: The .trim() method strips out all whitespace characters, reducing "   " to an empty string "". When .notEmpty() runs immediately after, it catches the empty string and correctly flags the validation error. The .escape() method converts dangerous HTML special characters into secure HTML entities to prevent Cross-Site Scripting (XSS) attacks. This process significantly expands the character count of the string.
+
+[Coach]: Spot on, Sampson! Your explanation of how .trim() reduces whitespace to an empty string to catch bypasses is exactly why order matters. We have successfully covered all four required topics. You did a fantastic job explaining your design choices and technical logic today.
+========================================================================
