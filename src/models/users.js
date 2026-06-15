@@ -32,13 +32,20 @@ export const createUser = async (name, email, passwordHash) => {
 };
 
 /**
- * Helper to find a user by their email string
+ * Helper to find a user by their email string and include their role name
  */
 const findUserByEmail = async (email) => {
     const query = `
-        SELECT user_id, name, email, password_hash, role_id 
-        FROM users 
-        WHERE email = $1
+        SELECT 
+            u.user_id, 
+            u.name, 
+            u.email, 
+            u.password_hash, 
+            u.role_id,
+            r.role_name as role
+        FROM users u
+        LEFT JOIN roles r ON u.role_id = r.role_id
+        WHERE u.email = $1
     `;
     const result = await pool.query(query, [email]);
 

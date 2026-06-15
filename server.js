@@ -1,8 +1,8 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import session from 'express-session'; // 1. Imported session package
 import router from './src/routes.js';
-
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -19,6 +19,21 @@ const app = express();
   * Configure Express middleware
   */
 
+// Express body-parsing middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 2. Configure Session Middleware (Must be defined BEFORE app.use(router))
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'cse340_super_secret_key_string',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // Set to true if using HTTPS/Production production deployment
+        maxAge: 1000 * 60 * 60 * 24 // Cookie expires in 24 hours
+    }
+}));
+
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -33,11 +48,14 @@ app.use((req, res, next) => {
     console.log(`🚀 Request Received: ${req.method} ${req.url}`);
     next(); 
 });
+
 // Middleware to make NODE_ENV available to all templates
 app.use((req, res, next) => {
     res.locals.NODE_ENV = NODE_ENV;
     next();
 });
+
+// Dynamic state middleware to handle dynamic navigation links
 app.use((req, res, next) => {
     // Set logged-in status variable
     res.locals.isLoggedIn = false;
@@ -47,7 +65,6 @@ app.use((req, res, next) => {
 
     // Pass the session down globally to easily grab roles in views
     res.locals.session = req.session; 
-    res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
     next();
 });
 
