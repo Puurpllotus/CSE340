@@ -17,6 +17,9 @@
         </a>
     </div>
 <% } %>
+<% if (isLoggedIn) { %>
+    <p style="margin-top: 20px;"><a href="/dashboard" style="color: #003366; font-weight: bold;">My Dashboard</a></p>
+<% } %>
 </main>
 
 <%- include('partials/footer') %>

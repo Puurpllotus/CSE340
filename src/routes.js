@@ -12,9 +12,12 @@ import {
     showLoginForm, 
     processLoginForm, 
     processLogout, 
+    requireLogin,
+    showDashboard,
     showUsersManagementPage 
 } from './controllers/users.js';
-import { requireLogin, requireRole } from './utilities/auth-middleware.js';
+
+import { requireRole } from './utilities/auth-middleware.js';
 
 const router = express.Router();
 
@@ -47,6 +50,9 @@ router.post('/register', processUserRegistrationForm);
 router.get('/login', showLoginForm);
 router.post('/login', processLoginForm);
 router.get('/logout', processLogout);
+
+// Protected dashboard route
+router.get('/dashboard', requireLogin, showDashboard);
 
 // Admin Protected Route
 router.get('/users', requireLogin, requireRole('admin'), showUsersManagementPage);

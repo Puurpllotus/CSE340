@@ -75,7 +75,7 @@ export const authenticateUser = async (email, password) => {
 };
 
 /**
- * W05 Assignment: Fetches all registered users along with their role names
+ * Fetches all registered users along with their role names
  */
 export const getAllUsers = async () => {
     const query = `

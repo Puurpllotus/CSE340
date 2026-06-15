@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<main style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <h1><%= title %></h1>
+
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; border: 1px solid #eee; margin-top: 20px;">
+        <h2>Welcome Back!</h2>
+        <p><strong>Name:</strong> <%= name %></p>
+        <p><strong>Username/Email:</strong> <%= email %></p>
+    </div>
+
+    <% if (session && session.user && session.user.role === 'admin') { %>
+        <div class="admin-controls" style="margin-top: 30px; padding: 20px; background: #f4f4f4; border-left: 5px solid #003366;">
+            <h2>Administrative Controls</h2>
+            <p>Access system database records and account level controls.</p>
+            <a href="/users" style="display: inline-block; padding: 10px 20px; background: #003366; color: white; text-decoration: none; border-radius: 4px;">
+                Manage Registered Users
+            </a>
+        </div>
+    <% } %>
+</main>
+<%- include('partials/footer') %>

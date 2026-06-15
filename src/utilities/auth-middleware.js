@@ -14,7 +14,7 @@ export const requireLogin = (req, res, next) => {
  */
 export const requireRole = (allowedRole) => {
     return (req, res, next) => {
-        if (!req.session.user || req.session.user.role !== allowedRole) {
+        if (!req.session || !req.session.user || req.session.user.role !== allowedRole) {
             if (req.flash) req.flash('error', 'Access denied. Authorized users only.');
             return res.redirect('/dashboard');
         }

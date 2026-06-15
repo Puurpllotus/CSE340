@@ -15,7 +15,7 @@ export const processUserRegistrationForm = async (req, res) => {
         await createUser(name, email, passwordHash);
 
         if (req.flash) req.flash('success', 'Registration successful! Please log in.');
-        res.redirect('/');
+        res.redirect('/login');
     } catch (error) {
         console.error('Error registering user:', error);
         if (req.flash) req.flash('error', 'An error occurred during registration. Please try again.');
@@ -40,7 +40,7 @@ export const processLoginForm = async (req, res) => {
                 console.log('User logged in:', user);
             }
 
-            res.redirect('/');
+            res.redirect('/dashboard');
         } else {
             if (req.flash) req.flash('error', 'Invalid email or password.');
             res.redirect('/login');
@@ -60,6 +60,15 @@ export const processLogout = async (req, res) => {
     res.redirect('/login');
 };
 
+export const showDashboard = (req, res) => {
+    const user = req.session.user;
+    res.render('dashboard', { 
+        title: 'Dashboard',
+        name: user.name,
+        email: user.email
+    });
+};
+
 export const showUsersManagementPage = async (req, res) => {
     try {
         const userList = await getAllUsers();
@@ -71,4 +80,15 @@ export const showUsersManagementPage = async (req, res) => {
         console.error('Failed to load user list:', error);
         res.redirect('/dashboard');
     }
+};
+
+/**
+ * Middleware to check if a user is logged in
+ */
+export const requireLogin = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        if (req.flash) req.flash('error', 'You must log in to view that page.');
+        return res.redirect('/login');
+    }
+    next();
 };
