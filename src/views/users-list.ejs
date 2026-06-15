@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<main style="max-width: 900px; margin: 40px auto; padding: 20px;">
+    <h1><%= title %></h1>
+    <p>Below is a system log of all registered users and their permission tiers.</p>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left;">
+        <thead>
+            <tr style="background-color: #003366; color: white;">
+                <th style="padding: 12px; border: 1px solid #ddd;">Name</th>
+                <th style="padding: 12px; border: 1px solid #ddd;">Email / Username</th>
+                <th style="padding: 12px; border: 1px solid #ddd;">Role Tier</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => { %>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px; border: 1px solid #ddd;"><%= user.name %></td>
+                    <td style="padding: 12px; border: 1px solid #ddd;"><%= user.email %></td>
+                    <td style="padding: 12px; border: 1px solid #ddd;">
+                        <span style="padding: 4px 8px; border-radius: 4px; background: <%= user.role === 'admin' ? '#f8d7da' : '#e2e3e5' %>; color: <%= user.role === 'admin' ? '#721c24' : '#383d41' %>">
+                            <%= user.role %>
+                        </span>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</main>
+<%- include('partials/footer') %>

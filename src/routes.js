@@ -6,6 +6,15 @@ import { showProjectsPage, showProjectDetailsPage } from './controllers/projects
 import { showCategoriesPage, showCategoryDetailsPage, buildAddCategory, registerCategory, buildEditCategory, updateCategoryData } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 import { categoryRules } from './utilities/category-validation.js';
+import { 
+    showUserRegistrationForm, 
+    processUserRegistrationForm, 
+    showLoginForm, 
+    processLoginForm, 
+    processLogout, 
+    showUsersManagementPage 
+} from './controllers/users.js';
+import { requireLogin, requireRole } from './utilities/auth-middleware.js';
 
 const router = express.Router();
 
@@ -29,5 +38,17 @@ router.get('/edit-category/:id', buildEditCategory);
 router.post('/edit-category/:id', categoryRules(), updateCategoryData);
 
 router.get('/test-error', testErrorPage);
+
+// User registration routes
+router.get('/register', showUserRegistrationForm);
+router.post('/register', processUserRegistrationForm);
+
+// User login and logout routes
+router.get('/login', showLoginForm);
+router.post('/login', processLoginForm);
+router.get('/logout', processLogout);
+
+// Admin Protected Route
+router.get('/users', requireLogin, requireRole('admin'), showUsersManagementPage);
 
 export default router;

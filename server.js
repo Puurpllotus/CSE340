@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import router from './src/routes.js';
 
+
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 
@@ -29,15 +30,24 @@ app.set('views', path.join(__dirname, 'src/views'));
 
 // Middleware to log all incoming requests
 app.use((req, res, next) => {
-    if (NODE_ENV === 'development') {
-        console.log(`${req.method} ${req.url}`);
-    }
-    next(); // Pass control to the next middleware or route
+    console.log(`🚀 Request Received: ${req.method} ${req.url}`);
+    next(); 
 });
-
 // Middleware to make NODE_ENV available to all templates
 app.use((req, res, next) => {
     res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+app.use((req, res, next) => {
+    // Set logged-in status variable
+    res.locals.isLoggedIn = false;
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+    }
+
+    // Pass the session down globally to easily grab roles in views
+    res.locals.session = req.session; 
+    res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
     next();
 });
 
