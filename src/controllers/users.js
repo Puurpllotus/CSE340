@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { createUser, authenticateUser, getAllUsers } from '../models/users.js';
 
+// --- Registration ---
 export const showUserRegistrationForm = (req, res) => {
     res.render('register', { title: 'Register' });
 };
@@ -23,6 +24,7 @@ export const processUserRegistrationForm = async (req, res) => {
     }
 };
 
+// --- Login & Logout ---
 export const showLoginForm = (req, res) => {
     res.render('login', { title: 'Login' }); 
 };
@@ -60,6 +62,7 @@ export const processLogout = async (req, res) => {
     res.redirect('/login');
 };
 
+// --- Dashboard ---
 export const showDashboard = (req, res) => {
     const user = req.session.user;
     res.render('dashboard', { 
@@ -69,6 +72,7 @@ export const showDashboard = (req, res) => {
     });
 };
 
+// --- Admin Management ---
 export const showUsersManagementPage = async (req, res) => {
     try {
         const userList = await getAllUsers();
@@ -80,15 +84,4 @@ export const showUsersManagementPage = async (req, res) => {
         console.error('Failed to load user list:', error);
         res.redirect('/dashboard');
     }
-};
-
-/**
- * Middleware to check if a user is logged in
- */
-export const requireLogin = (req, res, next) => {
-    if (!req.session || !req.session.user) {
-        if (req.flash) req.flash('error', 'You must log in to view that page.');
-        return res.redirect('/login');
-    }
-    next();
 };
