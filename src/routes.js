@@ -2,7 +2,7 @@ import express from 'express';
 
 import { showHomePage } from './controllers/index.js';
 import { showOrganizationsPage, showOrganizationDetailsPage } from './controllers/organizations.js';
-import { showProjectsPage, showProjectDetailsPage } from './controllers/projects.js';
+import { showProjectsPage, showProjectDetailsPage, handleVolunteerSignup, handleVolunteerCancel } from './controllers/projects.js';
 import { showCategoriesPage, showCategoryDetailsPage, buildAddCategory, registerCategory, buildEditCategory, updateCategoryData } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 import { categoryRules } from './utilities/category-validation.js';
@@ -48,6 +48,10 @@ router.get('/logout', processLogout);
 
 // Protected User Dashboard Route
 router.get('/dashboard', requireLogin, showDashboard);
+
+// Protected Volunteer Signup Routes
+router.post('/project/:id/volunteer', requireLogin, handleVolunteerSignup);
+router.post('/project/:id/unvolunteer', requireLogin, handleVolunteerCancel);
 
 // Protected Admin User Management Route
 router.get('/users', requireLogin, requireRole('admin'), showUsersManagementPage);

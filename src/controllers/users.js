@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { createUser, authenticateUser, getAllUsers } from '../models/users.js';
+import { getVolunteeredProjects } from '../models/projects.js';
 
 // --- Registration ---
 export const showUserRegistrationForm = (req, res) => {
@@ -63,13 +64,23 @@ export const processLogout = async (req, res) => {
 };
 
 // --- Dashboard ---
-export const showDashboard = (req, res) => {
-    const user = req.session.user;
-    res.render('dashboard', { 
-        title: 'Dashboard',
-        name: user.name,
-        email: user.email
-    });
+export const showDashboard = async (req, res) => {
+    try {
+        const user = req.session.user;
+        
+        // Fetch the user's volunteer project list from the database
+        const volunteeredProjects = await getVolunteeredProjects(user.user_id);
+
+        res.render('dashboard', { 
+            title: 'Dashboard',
+            name: user.name,
+            email: user.email,
+            volunteeredProjects // Passed down to your dashboard.ejs view
+        });
+    } catch (error) {
+        console.error('Dashboard loading error:', error);
+        res.status(500).send('Server Error');
+    }
 };
 
 // --- Admin Management ---

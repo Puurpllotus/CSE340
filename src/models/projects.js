@@ -105,3 +105,51 @@ export const getProjectsByCategoryId = async (categoryId) => {
         throw error;
     }
 };
+/**
+ * Add a user as a volunteer for a project
+ */
+export const addVolunteer = async (userId, projectId) => {
+    const query = `
+        INSERT INTO project_volunteers (user_id, project_id) 
+        VALUES ($1, $2) 
+        ON CONFLICT DO NOTHING
+    `;
+    await pool.query(query, [userId, projectId]);
+};
+
+/**
+ * Remove a user as a volunteer from a project
+ */
+export const removeVolunteer = async (userId, projectId) => {
+    const query = `
+        DELETE FROM project_volunteers 
+        WHERE user_id = $1 AND project_id = $2
+    `;
+    await pool.query(query, [userId, projectId]);
+};
+
+/**
+ * Get all projects a specific user has volunteered for
+ */
+export const getVolunteeredProjects = async (userId) => {
+    const query = `
+        SELECT p.project_id, p.title, p.description 
+        FROM project p
+        INNER JOIN project_volunteers pv ON p.project_id = pv.project_id
+        WHERE pv.user_id = $1
+    `;
+    const result = await pool.query(query, [userId]);
+    return result.rows;
+};
+
+/**
+ * Check if a specific user is currently volunteering for a specific project
+ */
+export const isUserVolunteering = async (userId, projectId) => {
+    const query = `
+        SELECT 1 FROM project_volunteers 
+        WHERE user_id = $1 AND project_id = $2
+    `;
+    const result = await pool.query(query, [userId, projectId]);
+    return result.rows.length > 0;
+};

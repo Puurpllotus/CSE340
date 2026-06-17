@@ -8,6 +8,31 @@
         <p><strong>Username/Email:</strong> <%= email %></p>
     </div>
 
+    <div style="margin-top: 30px; padding: 20px; background: #ffffff; border: 1px solid #ddd; border-radius: 5px;">
+        <h2 style="margin-top: 0;">My Volunteered Service Projects</h2>
+        <% if (locals.volunteeredProjects && volunteeredProjects.length > 0) { %>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <% volunteeredProjects.forEach(project => { %>
+                    <li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <a href="/project/<%= project.project_id %>" style="color: #003366; font-weight: 600; text-decoration: none;">
+                                <%= project.title %>
+                            </a>
+                        </div>
+                        <form action="/project/<%= project.project_id %>/unvolunteer?redirect=dashboard" method="POST" style="margin: 0;">
+                            <button type="submit" style="background: none; border: none; color: #dc2626; text-decoration: underline; cursor: pointer; font-size: 14px; padding: 0;">
+                                Leave Project
+                            </button>
+                        </form>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p style="color: #64748b; font-style: italic; margin: 0 0 10px 0;">You haven't signed up for any volunteer projects yet.</p>
+            <a href="/projects" style="color: #2563eb; text-decoration: underline; font-size: 14px;">Browse upcoming projects</a>
+        <% } %>
+    </div>
+
     <% if (session && session.user && session.user.role === 'admin') { %>
         <div class="admin-controls" style="margin-top: 30px; padding: 20px; background: #f4f4f4; border-left: 5px solid #003366;">
             <h2>Administrative Controls</h2>

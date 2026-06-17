@@ -15,7 +15,11 @@
                                     day: 'numeric' 
                                 }) %>:
                             </strong> 
-                            <%= project.title %> 
+                            
+                            <a href="/project/<%= project.project_id %>" style="color: #2563eb; font-weight: 600; text-decoration: underline;">
+                                <%= project.title %>
+                            </a> 
+                            
                             <span class="org-badge">(<%= project.organization_name %>)</span>
                             <p class="project-desc"><%= project.description %></p>
                             <small class="project-loc">📍 Location: <%= project.location %></small>
